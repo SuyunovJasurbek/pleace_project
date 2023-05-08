@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS "time_planning";
+DROP TABLE IF EXISTS "images";
+DROP TABLE IF EXISTS "likes";
+DROP TABLE IF EXISTS "people";
+DROP TABLE IF EXISTS "stadium";
+DROP TABLE IF EXISTS "users";
