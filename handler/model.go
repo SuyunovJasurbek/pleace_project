@@ -7,4 +7,3 @@ type Response struct {
 type BadRequestModel struct {
 	Message string
 }
-

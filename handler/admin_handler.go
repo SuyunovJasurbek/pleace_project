@@ -61,3 +61,10 @@ func (h *Handler) SignIn(c *gin.Context) {
 	})
 	// user agent ga ham boglashim kerak 
 }
+
+func (h *Handler) CreateStadium(c *gin.Context) {
+
+}
+func (h *Handler) CreatePictures(c *gin.Context) {
+
+}

@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"stad_projekt/helper"
 	"stad_projekt/models"
 )
@@ -15,10 +14,6 @@ func (s *Service) SignIn(sgn models.SignInModel) (models.SignInHandlerResponse, 
 	}
 
 	//2.
-	fmt.Println("--------------------------------")
-	fmt.Println(resp)
-	fmt.Println("--------------------------------")
-
 	if helper.CheckPasswordIfMatchs(resp.PasswordHash, sgn.Password) {
 		token := helper.GenerateToken(resp.ID)
 		var res = models.SignInHandlerResponse{

@@ -14,3 +14,11 @@ type SignInHandlerResponse struct {
 	ID string `json:"id"  db:"id" `
 	Token string `json:"token"  db:"token" `
 }
+
+type CreateStadiumModel struct {
+	Phone string `json:"phone" binding:"required" `
+	Location string `json:"location" binding:"required" `
+	Size string `json:"size" binding:"required" `
+	Price string `json:"price" binding:"required" `
+	Description string `json:"description" binding:"required" `
+}

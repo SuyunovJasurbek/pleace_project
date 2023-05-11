@@ -16,6 +16,8 @@ func RouteSetup(h handler.Handler,cfg config.Config) {
 	{
 		admin.GET("/ping")
 		admin.POST("/signin",h.SignIn)
+		admin.POST("/createstadium",h.CreateStadium)
+		admin.POST("createpictures",h.CreatePictures)
 	}
 
 	person := w.Group("person")
