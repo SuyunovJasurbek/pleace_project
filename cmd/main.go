@@ -13,5 +13,5 @@ func main() {
 	strg := postgres.NewPostgres(cfg)
 	s := service.NewService(strg)
 	h := handler.Newhandler(s)
-	routes.RouteSetup(h,cfg)
+	routes.RouteSetup(h, cfg)
 }

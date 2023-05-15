@@ -7,3 +7,7 @@ type Response struct {
 type BadRequestModel struct {
 	Message string
 }
+
+type StadiumId struct {
+	StadiumId string
+}

@@ -8,6 +8,7 @@ CREATE TABLE "stadium" (
   "card_person" text,
   "size" text,
   "price" text,
+  "Location" text,
   "latitude" text,
   "longitude" text,
   "created_at" text,
