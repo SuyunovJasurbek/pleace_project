@@ -21,7 +21,7 @@ CREATE TABLE "users" (
   "phone" text,
   "login" text,
   "password_hash" text,
-  "created_at" text,
+  "created_at" text,bd28
   "updated_at" text
 );
 

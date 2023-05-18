@@ -27,7 +27,6 @@ func (s *Service) SignIn(sgn models.SignInModel) (models.SignInHandlerResponse, 
 		return models.SignInHandlerResponse{}, errors.New("login yoki parol xato")
 	}
 }
-
 func (s *Service) CreateStadium() (string, error) {
 	return "", nil
 }

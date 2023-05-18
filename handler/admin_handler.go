@@ -139,20 +139,10 @@ func (h *Handler) UploadsPictures(c *gin.Context) {
 		})
 		return
 	}
-	
+	// UPLOADLARNI JOYINI HELPERGA UZGARTIRTISHIM KERAK 
 	c.JSON(http.StatusOK, Response{
 		Message: "File muvoffiqiyatli yuklandi",
 	})
-
-	// stadion_id, err := h.service.CreatePicture(fmt.Sprintf("%v", user_id_any))
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, BadRequestModel{
-	// 		Message: "File not upload ",
-	// 	})
-	// 	return
-	// }
-
-	// fmt.Println(stadion_id)
 }
 func (h *Handler) CreateStadiumName(c *gin.Context) {
 	var std_name models.CreateStadiumNameModel
