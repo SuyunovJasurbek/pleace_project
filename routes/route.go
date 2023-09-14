@@ -13,12 +13,14 @@ import (
 func RouteSetup(h handler.Handler, cfg config.Config) {
 	w := gin.Default()
 
-	w.POST("admin/signin", h.SignIn)
+	w.Static("/uploads", "./uploads")
 
+	w.POST("admin/signin", h.SignIn)
+	
 	admin := w.Group("admin", handler.Validate)
 	{
 		admin.GET("/ping")
-		admin.POST("/createstadiumname",h.CreateStadiumName)
+		admin.POST("/createpace", h.CreateStadiumName)
 		admin.POST("/uploadspictures", h.UploadsPictures)
 	}
 
