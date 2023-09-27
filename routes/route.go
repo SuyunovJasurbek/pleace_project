@@ -5,6 +5,7 @@ import (
 	"stad_projekt/config"
 	"stad_projekt/handler"
 
+	"github.com/gin-contrib/cors"
 	_ "github.com/lib/pq"
 
 	"github.com/gin-gonic/gin"
@@ -12,22 +13,74 @@ import (
 
 func RouteSetup(h handler.Handler, cfg config.Config) {
 	w := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowHeaders = append(
+		config.AllowHeaders,
+		`Content-Type,
+		Content-Length,
+		Accept-Encoding,
+		X-CSRF-Token,
+		Authorization,
+		accept,
+		origin,
+		Cache-Control,
+		X-Requested-With`,
+	)
+	config.AllowMethods = append(config.AllowMethods, "OPTIONS")
+	config.AllowAllOrigins = true
+	config.AllowCredentials = true
+	 config.AllowHeaders = append(config.AllowHeaders, "*")
 
-	w.Static("/uploads", "./uploads")
+	w.Use(cors.New(config))
+	w.Use(MaxAllowed(100))
+	w.Static("/static", "./static")
 
-	w.POST("admin/signin", h.SignIn)
-	
-	admin := w.Group("admin", handler.Validate)
+	//Auth ....
+	auth := w.Group("auth")
 	{
-		admin.GET("/ping")
-		admin.POST("/createpace", h.CreateStadiumName)
-		admin.POST("/uploadspictures", h.UploadsPictures)
+		auth.POST("/signin", h.SignIn)
 	}
 
+	// Admin ....
+	admin := w.Group("admin", h.Validet)
+	{
+		admin.POST("/createdcountry",h.CreateCountry)
+		admin.POST("/createdfield",h.CreateField)
+		admin.POST("/uploadedpicture",h.CreatePicture)
+		admin.POST("/getpictures",h.CreateData)
+		admin.GET("/getcountry",h.GetCountry)
+		admin.GET("/getfield",h.GetField)
+		admin.GET("/getdata",h.GetData)
+		admin.GET("/getpicture",h.GetPicture)
+		
+	}
+
+	// Person ....
 	person := w.Group("person")
 	{
-		person.GET("/ping", h.Ping)
+		person.GET("/getcountry", h.GetCountry)
+		person.GET("/getfield", h.GetField)
+		person.GET("/getdata", h.GetData)
+		person.GET("/getpicture", h.GetPicture)
 	}
-	w.Run(fmt.Sprintf(":%s", cfg.HTTPPort))
 
+	// ArdunioBoard ......
+	ardunioboard := w.Group("ardunioboard")
+	{
+		ardunioboard.POST("/createddata",h.CreateData)
+	}
+
+	
+	w.Run(fmt.Sprintf(":%s", cfg.HTTPPort))
+}
+
+func MaxAllowed(n int) gin.HandlerFunc {
+	sem := make(chan struct{}, n)
+	acquire := func() { sem <- struct{}{} }
+	release := func() { <-sem }
+	return func(c *gin.Context) {
+		acquire()       // before request
+		defer release() // after request
+		c.Next()
+	}
 }

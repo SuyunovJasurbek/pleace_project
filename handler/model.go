@@ -1,13 +1,18 @@
 package handler
 
 type Response struct {
+	Succses bool
 	Message string
 }
 
-type BadRequestModel struct {
-	Message string
+
+type ResponseCountry struct {
+	Succses bool
+	CountryId string
 }
 
-type StadiumId struct {
-	StadiumId string
+type ResponseFeild struct {
+	Succses bool
+	FeildId string
 }
+

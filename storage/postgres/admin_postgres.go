@@ -1,10 +1,10 @@
 package postgres
 
 import (
-	"errors"
-	"log"
+	"fmt"
 	"stad_projekt/models"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -12,93 +12,241 @@ type adminRepository struct {
 	db *sqlx.DB
 }
 
-const (
-	usersTable   = "users"
-	stadiumTable = "stadium"
-)
+// GetPicture implements storage.AdminI.
+func (d *adminRepository) GetPicture(ent models.GetFeildId) ([]models.GetPicture, error) {
+	var cnt []models.GetPicture
 
-// CheckStadiumPicture implements storage.AdminI
-func (d *adminRepository) CheckStadiumPicture(rq models.CheckStadiumPicture) bool {
-	var stadion_id, user_id string
-	//1 .....
-	query := ` SELECT id FROM ` + stadiumTable + ` WHERE id = $1 `
-	err := d.db.QueryRow(query, rq.StadiumId).Scan(&stadion_id)
+	query := fmt.Sprintf(`SELECT id, feild_id, path, created_at FROM %s WHERE feild_id=$1`, picture_table)
+	rows, err := d.db.Query(query, ent.FeildId)
 	if err != nil {
-		log.Printf("Method: CheskPictures, Error: %v", err)
-		return false
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.GetPicture
+		if err := rows.Scan(
+			&c.Id,
+			&c.FeildId,
+			&c.Url,
+			&c.CreateAt,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
 	}
 
-	if stadion_id == "" {
-		log.Printf("Method: CheskPictures nill stadium_id, Error: %v", err)
-		return false
-	}
-	//2 .....
-	query2 := `SELECT user_id FROM ` + stadiumTable + ` WHERE id = $1 `
-
-	err2 := d.db.QueryRow(query2, rq.StadiumId).Scan(&user_id)
-
-	if err2 != nil {
-		log.Printf("Method: CheskPictures, Error: %v", err2)
-		return false
-	}
-
-	if user_id == "" {
-		log.Printf("Method: CheskPictures, user_id nil Error: %v", err2)
-		return false
-	}
-
-	if user_id != rq.User_Id {
-		log.Printf("Method: CheskPictures.  cleint user_id vs user_id no some ))) , Error: %v", err2)
-		return false
-	}
-
-	return true
+	return cnt, nil
 }
 
-// UploadsPictures implements storage.AdminI
-func (*adminRepository) UploadsPictures() {
+var (
+	users_table   = "users"
+	country_table = "country"
+	feild_table   = "feild"
+	picture_table = "images"
+	data_table    = "weather"
+)
+
+// Auth implements storage.AdminI.
+func (d *adminRepository) Auth(token string) bool {
+	query := fmt.Sprintf(`SELECT token FROM %s WHERE token=$1`, users_table)
+	var token_db string
+	if err := d.db.DB.QueryRow(query, token).Scan(
+		&token_db,
+	); err != nil {
+		fmt.Println("----------------------")
+		fmt.Println(err)
+		return false
+	}
+	if token_db == token {
+		return true
+	}
+	return false
+}
+
+// UserList implements storage.AdminI.
+func (*adminRepository) UserList(models.UserList) ([]models.UserList, error) {
 	panic("unimplemented")
 }
 
-// CreateStadiumName implements storage.AdminI
-func (d *adminRepository) CreateStadiumName(msg models.StadiumNameRequest) (string, error) {
-	var stadium_id string
-	query := `INSERT INTO ` + stadiumTable + `( id, user_id , name ) VALUES ($1,$2,$3 ) RETURNING id `
-	err := d.db.QueryRow(query, msg.ID, msg.User_Id, msg.Name).Scan(&stadium_id)
-	// check error
+// GetData implements storage.AdminI.
+func (d *adminRepository) GetData(ent models.GetFeildId) ([]models.AparatDataToDB, error) {
+	var cnt []models.AparatDataToDB
+
+	query := fmt.Sprintf(`SELECT id, device_id, result_humidity, result_sun, result_wind, created_at FROM %s WHERE device_id=$1`, data_table)
+	rows, err := d.db.Query(query, ent.FeildId)
 	if err != nil {
-		log.Printf("Method: CreateStadiumName, Error: %v", err)
-		return "", err
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
 	}
-	return stadium_id, nil
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.AparatDataToDB
+		if err := rows.Scan(
+			&c.Id,
+			&c.FeildId,
+			&c.ResultHumidity,
+			&c.ResultTemperature,
+			&c.ResultLight,
+			&c.CreateAt,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
+	}
+
+	return cnt, nil
 }
 
-// SignIn implements storage.AdminI
-func (d *adminRepository) SignIn(login string) (models.SignInDBResponse, error) {
-	var resp models.SignInDBResponse
-	query := `SELECT id , name , password_hash FROM ` + usersTable + ` WHERE login = $1 `
-	// exec and scan
-	err := d.db.QueryRow(
-		query,
-		login,
-	).Scan(
-		&resp.ID,
-		&resp.Name,
-		&resp.PasswordHash,
-	)
+// CreateData implements storage.AdminI.
+func (d *adminRepository) CreateData(enty models.AparatDataToDB) (string, error) {
+	query := fmt.Sprintf(`INSERT INTO %s (id, device_id, result_humidity, result_sun, result_wind, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, data_table)
 
-	// check error
+	if _, err := d.db.Exec(query, enty.Id, enty.FeildId, enty.ResultHumidity, enty.ResultTemperature, enty.ResultLight, enty.CreateAt, enty.CreateAt, "-"); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	return enty.Id, nil
+}
+
+// GetField implements storage.AdminI.
+func (d *adminRepository) GetField() ([]models.GetField, error) {
+	var cnt []models.GetField
+
+	query := fmt.Sprintf(`SELECT id, name, country_id , created_at FROM %s`, feild_table)
+	rows, err := d.db.Query(query)
 	if err != nil {
-		log.Printf("Method: SignIn, Error: %v", err)
-		return models.SignInDBResponse{}, err
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.GetField
+		if err := rows.Scan(
+			&c.Id,
+			&c.Name,
+			&c.CountryId,
+			&c.CreateAt,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
 	}
 
-	if resp.ID == "" {
-		return models.SignInDBResponse{}, errors.New("login yoki parol xato")
+	return cnt, nil
+}
+
+// GetCountry implements storage.AdminI.
+func (d *adminRepository) GetCountry() ([]models.GetCountry, error) {
+	var cnt []models.GetCountry
+
+	query := fmt.Sprintf(`SELECT id, name, location , created_at FROM %s`, country_table)
+	rows, err := d.db.Query(query)
+	if err != nil {
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.GetCountry
+		if err := rows.Scan(
+			&c.Id,
+			&c.Name,
+			&c.Location,
+			&c.CreateAt,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
 	}
 
-	// return result
-	return resp, nil
+	return cnt, nil
+
+}
+
+// Picture implements storage.AdminI.
+func (d *adminRepository) Picture(enty models.PictureToDB) (string, error) {
+	query := fmt.Sprintf(`INSERT INTO %s (id, feild_id, path, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, picture_table)
+
+	if _, err := d.db.Exec(query, enty.Id, enty.FeildId, enty.Url, enty.CreateAt, enty.CreateAt, "-"); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+	return enty.Id, nil
+}
+
+// Country implements storage.AdminI.
+func (d *adminRepository) Country(cnt models.CountryToDB) (string, error) {
+	query := fmt.Sprintf(`INSERT INTO %s (id, name, location, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, country_table)
+
+	if _, err := d.db.Exec(query, cnt.Id, cnt.Name, cnt.Location, cnt.CreateAt, cnt.CreateAt, "-"); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+	return cnt.Id, nil
+
+}
+
+// Feild implements storage.AdminI.
+func (d *adminRepository) Feild(cnt models.FeildToDB) (string, error) {
+	query := fmt.Sprintf(`INSERT INTO %s (id, country_id, name, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, feild_table)
+
+	if _, err := d.db.Exec(query, cnt.Id, cnt.CountryId, cnt.Name, cnt.CreateAt, cnt.CreateAt, "-"); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+	return cnt.Id, nil
+}
+
+// SignIn implements storage.AdminI.
+func (d *adminRepository) SignIn(ent models.SignInModel) (string, error) {
+	var token string
+
+	qurty := fmt.Sprintf(`SELECT token  FROM %s  WHERE login =$1 and  password_hash=$2`, users_table)
+	if err := d.db.DB.QueryRow(qurty, ent.Login, ent.Password).Scan(
+		&token,
+	); err != nil {
+		fmt.Println("----------------------")
+		fmt.Println(err)
+		return "", err
+
+	}
+
+	token_new := uuid.NewString()
+
+	query2 := fmt.Sprintf(`UPDATE %s SET token=$1 WHERE login=$2`, users_table)
+	if _, err := d.db.Exec(query2, token_new, ent.Login); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	return token_new, nil
 }
 
 func NewAdminRepository(db *sqlx.DB) *adminRepository {

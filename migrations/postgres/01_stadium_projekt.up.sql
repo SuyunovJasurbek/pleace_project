@@ -1,4 +1,4 @@
-CREATE TABLE "county" (
+CREATE TABLE "country" (
   "id" text PRIMARY KEY,
   "name" text,
   "location" text,
@@ -9,16 +9,15 @@ CREATE TABLE "county" (
 
 CREATE TABLE "images" (
   "id" text PRIMARY KEY,
-  "country_id" text,
+  "feild_id" text,
   "path" text,
   "created_at" text,
   "updated_at" text,
   "deleted_at" text
 );
 
-CREATE TABLE "device" (
+CREATE TABLE "feild" (
   "id" text PRIMARY KEY,
-  "user_id" text,
   "country_id" text,
   "name" text,
   "created_at" text,
@@ -27,25 +26,16 @@ CREATE TABLE "device" (
 );
 
 CREATE TABLE "users" (
-  "id" text PRIMARY KEY,
   "login" text,
-  "phone" text,
   "password_hash" text,
-  "created_at" text,
-  "updated_at" text
+  "token" text,
+  "created_at" text
 );
 
-CREATE TABLE "sun" (
-  "id" text,
-  "result_sun" text,
-  "device_id" text,
-  "created_at" text,
-  "updated_at" text,
-  "deleted_at" text
-);
-
-CREATE TABLE "wind" (
+CREATE TABLE "weather" (
   "id" text PRIMARY KEY,
+  "result_humidity" text,
+  "result_sun" text,
   "result_wind" text,
   "device_id" text,
   "created_at" text,
@@ -53,23 +43,8 @@ CREATE TABLE "wind" (
   "deleted_at" text
 );
 
-CREATE TABLE "humidity" (
-  "id" text PRIMARY KEY,
-  "result_humidity" text,
-  "device_id" text,
-  "created_at" text,
-  "updated_at" text,
-  "deleted_at" text
-);
+ALTER TABLE "images" ADD FOREIGN KEY ("feild_id") REFERENCES "feild" ("id");
 
-ALTER TABLE "images" ADD FOREIGN KEY ("country_id") REFERENCES "county" ("id");
+ALTER TABLE "feild" ADD FOREIGN KEY ("country_id") REFERENCES "country" ("id");
 
-ALTER TABLE "device" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "device" ADD FOREIGN KEY ("country_id") REFERENCES "county" ("id");
-
-ALTER TABLE "sun" ADD FOREIGN KEY ("device_id") REFERENCES "device" ("id");
-
-ALTER TABLE "wind" ADD FOREIGN KEY ("device_id") REFERENCES "device" ("id");
-
-ALTER TABLE "humidity" ADD FOREIGN KEY ("device_id") REFERENCES "device" ("id");
+ALTER TABLE "weather" ADD FOREIGN KEY ("device_id") REFERENCES "feild" ("id");

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"stad_projekt/helper"
 	"stad_projekt/models"
@@ -9,13 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SignIn ....
 func (h *Handler) SignIn(c *gin.Context) {
 	var sign_model models.SignInModel
 	//1.
 
 	err := c.ShouldBindJSON(&sign_model)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusBadRequest, Response{
+			Succses: false,
 			Message: "Login yoki Password bush",
 		})
 		return
@@ -23,12 +24,14 @@ func (h *Handler) SignIn(c *gin.Context) {
 	//2.
 
 	if len(sign_model.Login) > 15 {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusUnauthorized, Response{
+			Succses: false,
 			Message: "Login qiymati uzunligi oshib ketdi",
 		})
 		return
 	} else if len(sign_model.Password) > 15 {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusUnauthorized, Response{
+			Succses: false,
 			Message: "Password qiymati uzunligi oshib ketdi",
 		})
 		return
@@ -37,154 +40,155 @@ func (h *Handler) SignIn(c *gin.Context) {
 	//3. too DB ....
 	res, err := h.service.SignIn(sign_model)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusUnauthorized, Response{
+			Succses: false,
 			Message: "Login yoki password xato",
 		})
 		return
 	}
 
-	//4. Set Cookie
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("token", res.Token, 3600, "", "", false, true)
-	c.SetCookie("user_id", res.ID, 3600, "", "", false, true)
-	user_id, err := c.Cookie("user_id")
+	
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusUnauthorized, Response{
+			Succses: false,
 			Message: "Iltimos qaytadan kiring",
 		})
 		return
 	}
-	c.Header("token", res.Token)
+
 
 	//5. Login Succsesfule
 	c.JSON(http.StatusOK, Response{
-		Message: "Login succsesfule" + "User_Id : " + user_id + "   " + c.Request.UserAgent(),
+		Succses: true,
+		Message: res,
 	})
-	// user agent ga ham boglashim kerak
 }
 
-func (h *Handler) CreateStadium(c *gin.Context) {
-	var std_model models.CreateStadiumModel
-	//1 .
-	err := c.ShouldBindJSON(&std_model)
+// Create Country ............
+func (h *Handler) CreateCountry(c *gin.Context) {
+	var crt models.Country
+	err := c.ShouldBindJSON(&crt)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "Malumotlar tulig' emas ....",
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Malumotlar tulig' emas",
 		})
 		return
 	}
 
-	//2.
+	id, err :=h.service.CreateCountry(crt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,ResponseCountry{
+		Succses:   true,
+		CountryId: id,
+	})
 }
 
-func (h *Handler) UploadsPictures(c *gin.Context) {
-	// get file
+// Create Field ............
+func (h *Handler) CreateField(c *gin.Context) {
+	var crt models.Feild
+	err := c.ShouldBindJSON(&crt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Malumotlar tulig' emas",
+		})
+		return
+	}
+
+	id, err :=h.service.CreateField(crt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,ResponseFeild{
+		Succses:   true,
+		FeildId: id,
+	})
+}
+
+// Create Picture ............
+func (h *Handler) CreatePicture(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
+		c.JSON(http.StatusBadRequest, Response{
 			Message: "File type  not fount",
 		})
 		return
 	}
-	// get stadium_id
-	stadium_id := c.PostForm("stadium_id")
-	if stadium_id == "" {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "stadium_id not fount",
-		})
-	}
 
-	file_name := file.Filename
-	var name_png, name_jpg = ".png", ".jpg"
-	for i := 1; i <= 4; i++ {
-		if string(name_png[len(name_png)-i]) == string(file_name[len(file_name)-i]) || string(name_jpg[len(name_jpg)-i]) == string(file_name[len(file_name)-i]) {
-			continue
-		} else {
-			c.JSON(http.StatusBadRequest, BadRequestModel{
-				Message: "File type  not fount",
-			})
-			return
-		}
-	}
-
-	user_id, ok := c.Get("user_id")
-	if !ok {
-		c.JSON(http.StatusNotFound, BadRequestModel{
-			Message: "User not faund",
+	field_id := c.PostForm("field_id")
+	if field_id == "" {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Field_Id not fount",
 		})
 		return
 	}
 
-	rq := models.CheckStadiumPicture{
-		StadiumId: stadium_id,
-		User_Id:   fmt.Sprintf("%v", user_id),
-	}
-
-	f :=h.service.CheckStadiumPicture(rq)
-	if !f {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "stadion_id vs user_id no same ",
-		})
-		return
-	}
-	ran_name := helper.RandomString()
-	stadium_name := stadium_id
-
-	// Upload the file to specific dst.
-	dst := "./uploads/" + "./" + stadium_name + "/" + ran_name + ".png"
-	err = c.SaveUploadedFile(file, dst)
+	name :=helper.RandomString(5)
+	path :="static/"+field_id+"/"+name+".jpg"
+	err = c.SaveUploadedFile(file,path )
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "File not upload ",
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "File not save",
 		})
 		return
 	}
-	// UPLOADLARNI JOYINI HELPERGA UZGARTIRTISHIM KERAK 
+
+	var crt=  models.Picture{
+		FeildId: field_id,
+		Url:     path,
+	}
+
+	id, err :=h.service.CreatePicture(crt) 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
+		})
+		return
+	}
+
+
 	c.JSON(http.StatusOK, Response{
-		Message: "File muvoffiqiyatli yuklandi",
+		Succses: true,
+		Message: id,
 	})
 }
-func (h *Handler) CreateStadiumName(c *gin.Context) {
-	var std_name models.CreateStadiumNameModel
-	//1 .
-	err := c.ShouldBindJSON(&std_name)
+
+// Get Country ............
+func (h *Handler) GetCountry(c *gin.Context) {
+	
+	countrys, err :=h.service.GetCountry()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "Malumotlar tulig' emas ....",
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
 		})
+
 		return
-	}
-	//2 .
-	if len(std_name.Name) >= 20 {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "Stadium name length increased",
-		})
-		return
+
 	}
 
-	//3 .
-	user_id, ok := c.Get("user_id")
-	if !ok {
-		c.JSON(http.StatusNotFound, BadRequestModel{
-			Message: "User not faund",
-		})
-		return
-	}
+	c.JSON(http.StatusOK, countrys)
+}
 
-	var msg = models.CreateStadiumNameRequest{
-		User_Id: fmt.Sprintf("%v", user_id),
-		Name:    std_name.Name,
-	}
-
-	std_id, err := h.service.CreateStadiumName(msg)
+func (h *Handler) GetField(c *gin.Context) {
+	
+	countrys, err :=h.service.GetCountry()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, BadRequestModel{
-			Message: "Create Stadium Name error",
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
 		})
+
 		return
+
 	}
 
-	c.JSON(http.StatusOK, Response{
-		Message: std_id,
-	})
+	c.JSON(http.StatusOK, countrys)
 }
