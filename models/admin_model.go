@@ -83,3 +83,23 @@ type GetPicture struct {
 	Url string `json:"url" db:"url"`
 	CreateAt string `json:"create_at" db:"create_at"`
 }
+
+type DeleteCountryID struct {
+	Id string `json:"id" binding:"required" `
+}
+
+type DeleteFieldID struct {
+	Id string `json:"id" binding:"required" `
+}
+
+type UpdateCountry struct {
+	Id string `json:"id" binding:"required" `
+	Name string `json:"name" binding:"required" `	
+	Location string `json:"location" binding:"required" `
+}
+
+type UpdateField struct {
+	Id string `json:"id" binding:"required" `
+	CountryId string `json:"country_id" binding:"required" `
+	Name string `json:"name" binding:"required" `
+}

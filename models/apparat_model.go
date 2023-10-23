@@ -24,3 +24,16 @@ List []AparatDataToDB  `json:"list" db:"list"`
 type GetFeildId struct {
 	FeildId string `json:"feild_id" binding:"required" `
 }
+
+type GetCountryId struct {
+	CountryId string `json:"country_id" binding:"required" `
+}
+
+type GetFeildIdAll struct {
+	List []GetFeildIdToList `json:"list" db:"list"`
+}
+
+type GetFeildIdToList struct {
+	FeildId string `json:"feild_id" binding:"required" `
+	Name string `json:"name" binding:"required" `
+}

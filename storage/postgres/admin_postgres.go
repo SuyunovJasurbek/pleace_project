@@ -12,12 +12,114 @@ type adminRepository struct {
 	db *sqlx.DB
 }
 
+var (
+	users_table   = "users"
+	country_table = "country"
+	feild_table   = "feild"
+	picture_table = "images"
+	data_table    = "weather"
+)
+
+
+// DeleteCountry implements storage.AdminI.
+func (d *adminRepository) DeleteCountry(country_id string) (string, error) {
+	var id string
+	query1 := fmt.Sprintf(`SELECT id  FROM %s WHERE country_id=$1`, feild_table)
+	fmt.Println("____________________")
+	fmt.Println(query1)
+	fmt.Println(country_id)
+	fmt.Println("____________________")
+	if err := d.db.DB.QueryRow(query1, country_id).Scan(
+		&id,
+	); err != nil {
+		fmt.Println("----------------------")
+		fmt.Println(err)
+		return "", err
+
+	}
+	query2 := fmt.Sprintf(`DELETE FROM %s WHERE device_id=$1`, data_table)
+	if _, err := d.db.Exec(query2, id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	query3 := fmt.Sprintf(`DELETE FROM %s WHERE country_id=$1`, feild_table)
+	if _, err := d.db.Exec(query3, country_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
+	if _, err := d.db.Exec(query4, id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}	
+
+	query5 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, country_table)
+	if _, err := d.db.Exec(query5, country_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	return country_id, nil
+}
+
+// DeleteField implements storage.AdminI.
+func (d *adminRepository) DeleteField(field_id string) (string, error) {
+	panic("unimplemented")
+}
+
+// UpdateCountry implements storage.AdminI.
+func (d *adminRepository) UpdateCountry(models.CountryToDB) (string, error) {
+	panic("unimplemented")
+}
+
+// UpdateField implements storage.AdminI.
+func (*adminRepository) UpdateField(models.FeildToDB) (string, error) {
+	panic("unimplemented")
+}
+
+// GetFeildIdToList implements storage.AdminI.
+func (d *adminRepository) GetFeildIdToList(country_id string) ([]models.CountryToDB, error) {
+	query := fmt.Sprintf(`SELECT id, name, created_at FROM %s WHERE country_id=$1`, feild_table)
+	rows, err := d.db.Query(query, country_id)
+	if err != nil {
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var cnt []models.CountryToDB
+
+	for rows.Next() {
+		var c models.CountryToDB
+		if err := rows.Scan(
+			&c.Id,
+			&c.Name,
+			&c.CreateAt,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
+	}
+
+	return cnt, nil
+}
+
 // GetPicture implements storage.AdminI.
-func (d *adminRepository) GetPicture(ent models.GetFeildId) ([]models.GetPicture, error) {
+func (d *adminRepository) GetPicture(dat string) ([]models.GetPicture, error) {
 	var cnt []models.GetPicture
 
 	query := fmt.Sprintf(`SELECT id, feild_id, path, created_at FROM %s WHERE feild_id=$1`, picture_table)
-	rows, err := d.db.Query(query, ent.FeildId)
+	rows, err := d.db.Query(query, dat)
 	if err != nil {
 		fmt.Println("__________tashqarida____________")
 		fmt.Println(err)
@@ -44,14 +146,6 @@ func (d *adminRepository) GetPicture(ent models.GetFeildId) ([]models.GetPicture
 	return cnt, nil
 }
 
-var (
-	users_table   = "users"
-	country_table = "country"
-	feild_table   = "feild"
-	picture_table = "images"
-	data_table    = "weather"
-)
-
 // Auth implements storage.AdminI.
 func (d *adminRepository) Auth(token string) bool {
 	query := fmt.Sprintf(`SELECT token FROM %s WHERE token=$1`, users_table)
@@ -75,11 +169,11 @@ func (*adminRepository) UserList(models.UserList) ([]models.UserList, error) {
 }
 
 // GetData implements storage.AdminI.
-func (d *adminRepository) GetData(ent models.GetFeildId) ([]models.AparatDataToDB, error) {
+func (d *adminRepository) GetData(dat string) ([]models.AparatDataToDB, error) {
 	var cnt []models.AparatDataToDB
 
 	query := fmt.Sprintf(`SELECT id, device_id, result_humidity, result_sun, result_wind, created_at FROM %s WHERE device_id=$1`, data_table)
-	rows, err := d.db.Query(query, ent.FeildId)
+	rows, err := d.db.Query(query, dat)
 	if err != nil {
 		fmt.Println("__________tashqarida____________")
 		fmt.Println(err)

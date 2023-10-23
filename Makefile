@@ -8,7 +8,7 @@ watch:
 	make go
 
 swag:	
-	swag init -g ./cmd/main.go -o ./docs
+	swag init -g ./cmd/main.go -o ./cmd/docs
 
 login-psql:
 	docker exec -it ${DOCKER_POSTGRES_CONTAINER_NAME} psql ${POSTGRES_DB} ${POSTGRES_USER}

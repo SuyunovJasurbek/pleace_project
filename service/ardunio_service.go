@@ -27,9 +27,20 @@ func (s *Service) CreateData(data models.AparatData) (string, error) {
 
 }
 
-func (s *Service) GetData(data models.GetFeildId) ([]models.AparatDataToDB, error) {
+func (s *Service) GetData(data string ) ([]models.AparatDataToDB, error) {
 	
 	res, err := s.repo.Admin().GetData(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+
+}
+
+func (s *Service) GetFeildIdToList(country_id string ) ([]models.CountryToDB, error) {
+
+	res, err := s.repo.Admin().GetFeildIdToList(country_id)
 	if err != nil {
 		return nil, err
 	}

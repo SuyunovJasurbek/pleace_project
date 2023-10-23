@@ -1,0 +1,64 @@
+info:
+  contact:
+    email: support@swagger.io
+    name: API Jasurbek
+    url: http://www.swagger.io/support
+  license:
+    name: '@Suyunov_Jasurbek'
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /admin/createcountry:
+    post:
+      consumes:
+      - application/json
+      description: get accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: error
+          schema:
+            type: string
+        "404":
+          description: error
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: List accounts
+      tags:
+      - accounts
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: get accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: error
+          schema:
+            type: string
+        "404":
+          description: error
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: List accounts
+      tags:
+      - accounts
+swagger: "2.0"

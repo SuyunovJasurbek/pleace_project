@@ -72,15 +72,42 @@ func (s *Service) GetCountry () ([]models.GetCountry, error) {
 	return s.repo.Admin().GetCountry()
 }
 
-func (s *Service) GetField () ([]models.GetCountry, error) {
-	return s.repo.Admin().GetCountry()
+func (s *Service) GetField () ([]models.GetField, error) {
+	return s.repo.Admin().GetField()
 }
 
-
-func (s *Service) GetPicture(dat models.GetFeildId) ([]models.GetPicture, error) {
+func (s *Service) GetPicture(dat string) ([]models.GetPicture, error) {
 	pictures, err := s.repo.Admin().GetPicture(dat)
 	if err != nil {
 		return nil, err
 	}
 	return pictures, nil
+}
+
+func (s *Service) UpdateCountry(data models.UpdateCountry) (string, error) {
+	var dat= models.CountryToDB{
+
+		Id:       data.Id,
+		Name:     data.Name,
+		Location: data.Location,
+		CreateAt: time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	_,err :=s.repo.Admin().UpdateCountry(dat)
+	if err != nil {
+		return "", err
+	}
+	return "ok", nil
+}
+
+func (s *Service) UpdateField(data models.FeildToDB) (string, error) {
+	return s.repo.Admin().UpdateField(data)
+}
+
+func (s *Service) DeleteCountry(country_id string) (string, error) {
+	return s.repo.Admin().DeleteCountry(country_id)
+}
+
+func (s *Service) DeleteField(field_id string) (string, error) {
+	return s.repo.Admin().DeleteField(field_id)
 }

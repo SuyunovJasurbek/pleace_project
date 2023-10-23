@@ -1,6 +1,9 @@
 package storage
 
-import "stad_projekt/models"
+import (
+	"context"
+	"stad_projekt/models"
+)
 
 type StorageI interface {
 	Person() PersonI
@@ -8,19 +11,32 @@ type StorageI interface {
 	CloseDb()
 }
 
-type PersonI interface{
+type CasheStorageI interface {
+	Token() TokenI
+}
+type PersonI interface {
+}
+
+type TokenI interface {
+	SetToken(ctx context.Context, key, value string) error
+	GetToken(ctx context.Context,key string) (token string, err error)
 }
 
 type AdminI interface {
-	SignIn(models.SignInModel)(  string ,error)
-	Auth(token string) (bool)
+	SignIn(models.SignInModel) (string, error)
+	Auth(token string) bool
 	UserList(models.UserList) ([]models.UserList, error)
-	Country(models.CountryToDB)( string, error)
+	Country(models.CountryToDB) (string, error)
 	Feild(models.FeildToDB) (string, error)
 	Picture(models.PictureToDB) (string, error)
 	GetCountry() ([]models.GetCountry, error)
 	GetField() ([]models.GetField, error)
 	CreateData(models.AparatDataToDB) (string, error)
-	GetData(models.GetFeildId) ([]models.AparatDataToDB, error)
-	GetPicture(models.GetFeildId) ([]models.GetPicture, error)
+	GetData(dat string) ([]models.AparatDataToDB, error)
+	GetPicture(dat string) ([]models.GetPicture, error)
+	GetFeildIdToList(country_id string) ([]models.CountryToDB, error)
+	UpdateCountry(models.CountryToDB) (string, error)
+	UpdateField(models.FeildToDB) (string, error)
+	DeleteCountry(country_id string) (string, error)
+	DeleteField(field_id string) (string, error)
 }

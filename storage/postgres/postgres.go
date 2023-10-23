@@ -41,6 +41,7 @@ func NewPostgres(cnf config.Config) storage.StorageI {
 	psqlConnString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cnf.PostgresHost, cnf.PostgresPort, cnf.PostgresUser, cnf.PostgresPassword, cnf.PostgresDatabase)
 
+	fmt.Println(psqlConnString)
 	db, err := sqlx.Connect("postgres", psqlConnString)
 	if err != nil {
 		log.Printf("Error connecting to database: %v", err)
@@ -51,4 +52,5 @@ func NewPostgres(cnf config.Config) storage.StorageI {
 	return &StorageI{
 		db: db,
 	}
+
 }

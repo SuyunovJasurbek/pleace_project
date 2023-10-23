@@ -8,7 +8,11 @@ import (
 	"github.com/gin-contrib/cors"
 	_ "github.com/lib/pq"
 
+	_ "stad_projekt/cmd/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func RouteSetup(h handler.Handler, cfg config.Config) {
@@ -29,7 +33,7 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 	config.AllowMethods = append(config.AllowMethods, "OPTIONS")
 	config.AllowAllOrigins = true
 	config.AllowCredentials = true
-	 config.AllowHeaders = append(config.AllowHeaders, "*")
+	config.AllowHeaders = append(config.AllowHeaders, "*")
 
 	w.Use(cors.New(config))
 	w.Use(MaxAllowed(100))
@@ -44,15 +48,18 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 	// Admin ....
 	admin := w.Group("admin", h.Validet)
 	{
-		admin.POST("/createdcountry",h.CreateCountry)
-		admin.POST("/createdfield",h.CreateField)
-		admin.POST("/uploadedpicture",h.CreatePicture)
-		admin.POST("/getpictures",h.CreateData)
-		admin.GET("/getcountry",h.GetCountry)
-		admin.GET("/getfield",h.GetField)
-		admin.GET("/getdata",h.GetData)
-		admin.GET("/getpicture",h.GetPicture)
-		
+		admin.POST("/createdcountry", h.CreateCountry)
+		admin.POST("/createdfield", h.CreateField)
+		admin.POST("/uploadedpicture", h.CreatePicture)
+		admin.GET("/getcountry", h.GetCountry)
+		admin.GET("/getfield", h.GetField)
+		admin.GET("/getdata", h.GetData)
+		admin.GET("/getpicture", h.GetPicture)
+		admin.GET("/getcountryid", h.GetFeildIdToList)
+		admin.PUT("/updatecountry", h.UpdateCountry)
+		admin.PUT("/updatefield", h.UpdateField)
+		admin.DELETE("/deletecountry", h.DeleteCountry)
+		admin.DELETE("/deletefield", h.DeleteField)
 	}
 
 	// Person ....
@@ -62,15 +69,16 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 		person.GET("/getfield", h.GetField)
 		person.GET("/getdata", h.GetData)
 		person.GET("/getpicture", h.GetPicture)
+		person.GET("/getcountryid", h.GetFeildIdToList)
 	}
 
 	// ArdunioBoard ......
 	ardunioboard := w.Group("ardunioboard")
 	{
-		ardunioboard.POST("/createddata",h.CreateData)
+		ardunioboard.POST("/createddata", h.CreateData)
 	}
 
-	
+	w.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	w.Run(fmt.Sprintf(":%s", cfg.HTTPPort))
 }
 
