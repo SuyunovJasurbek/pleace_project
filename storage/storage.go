@@ -35,8 +35,6 @@ type AdminI interface {
 	GetData(dat string) ([]models.AparatDataToDB, error)
 	GetPicture(dat string) ([]models.GetPicture, error)
 	GetFeildIdToList(country_id string) ([]models.CountryToDB, error)
-	UpdateCountry(models.CountryToDB) (string, error)
-	UpdateField(models.FeildToDB) (string, error)
 	DeleteCountry(country_id string) (string, error)
 	DeleteField(field_id string) (string, error)
 }

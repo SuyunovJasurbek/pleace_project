@@ -56,8 +56,6 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 		admin.GET("/getdata", h.GetData)
 		admin.GET("/getpicture", h.GetPicture)
 		admin.GET("/getcountryid", h.GetFeildIdToList)
-		admin.PUT("/updatecountry", h.UpdateCountry)
-		admin.PUT("/updatefield", h.UpdateField)
 		admin.DELETE("/deletecountry", h.DeleteCountry)
 		admin.DELETE("/deletefield", h.DeleteField)
 	}

@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"stad_projekt/helper"
 	"stad_projekt/models"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -212,61 +212,6 @@ func (h *Handler) GetField(c *gin.Context) {
 	c.JSON(http.StatusOK, countrys)
 }
 
-// Update Country ............
-func (h *Handler) UpdateCountry(c *gin.Context) {
-	var crt models.UpdateCountry
-	err := c.ShouldBindJSON(&crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Malumotlar tulig' emas",
-		})
-		return
-	}
-
-	_, err = h.service.UpdateCountry(crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, Response{
-		Succses: true,
-		Message: "Update Succses",
-	})
-}
-
-// Update Field ............
-func (h *Handler) UpdateField(c *gin.Context) {
-	var crt models.Feild
-	err := c.ShouldBindJSON(&crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Malumotlar tulig' emas",
-		})
-		return
-	}
-
-	var crt2 = models.FeildToDB{
-		Name:      crt.Name,
-		CountryId: crt.CountryId,
-		CreateAt:  time.Now().Format("2006-01-02 15:04:05"),
-	}
-	_, err = h.service.UpdateField(crt2)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, Response{
-		Succses: true,
-		Message: "Update Succses",
-	})
-}
-
 // Delete Country ............
 func (h *Handler) DeleteCountry(c *gin.Context) {
 	id := c.Query("id")
@@ -303,6 +248,9 @@ func (h *Handler) DeleteField(c *gin.Context) {
 	}
 
 	_, err := h.service.DeleteField(id)
+	fmt.Println("________________")
+	fmt.Println(err)
+	fmt.Println("________________")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Message: "Biror joyida xatolik bor .",

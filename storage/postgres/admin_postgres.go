@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 	"stad_projekt/models"
 
@@ -20,10 +21,10 @@ var (
 	data_table    = "weather"
 )
 
-
 // DeleteCountry implements storage.AdminI.
 func (d *adminRepository) DeleteCountry(country_id string) (string, error) {
 	var id string
+
 	query1 := fmt.Sprintf(`SELECT id  FROM %s WHERE country_id=$1`, feild_table)
 	fmt.Println("____________________")
 	fmt.Println(query1)
@@ -34,11 +35,17 @@ func (d *adminRepository) DeleteCountry(country_id string) (string, error) {
 	); err != nil {
 		fmt.Println("----------------------")
 		fmt.Println(err)
-		return "", err
-
 	}
+
 	query2 := fmt.Sprintf(`DELETE FROM %s WHERE device_id=$1`, data_table)
 	if _, err := d.db.Exec(query2, id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
+	if _, err := d.db.Exec(query4, id); err != nil {
 		fmt.Println("_________________________")
 		fmt.Println(err)
 		return "", err
@@ -51,36 +58,81 @@ func (d *adminRepository) DeleteCountry(country_id string) (string, error) {
 		return "", err
 	}
 
-	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
-	if _, err := d.db.Exec(query4, id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}	
-
 	query5 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, country_table)
-	if _, err := d.db.Exec(query5, country_id); err != nil {
+	res, err := d.db.Exec(query5, country_id)
+	if err != nil {
 		fmt.Println("_________________________")
 		fmt.Println(err)
 		return "", err
 	}
 
-	return country_id, nil
+	fmt.Println("_+_+_+")
+	fmt.Println(res.RowsAffected())
+	fmt.Println("_+_+_+")
+	k, _ := res.RowsAffected()
+	if k == 1 {
+		return country_id, nil
+	} else {
+		return "", errors.New("error bor ")
+	}
 }
 
 // DeleteField implements storage.AdminI.
 func (d *adminRepository) DeleteField(field_id string) (string, error) {
-	panic("unimplemented")
-}
 
-// UpdateCountry implements storage.AdminI.
-func (d *adminRepository) UpdateCountry(models.CountryToDB) (string, error) {
-	panic("unimplemented")
-}
+	query2 := fmt.Sprintf(`DELETE FROM %s WHERE device_id=$1`, data_table)
+	if _, err := d.db.Exec(query2, field_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
 
-// UpdateField implements storage.AdminI.
-func (*adminRepository) UpdateField(models.FeildToDB) (string, error) {
-	panic("unimplemented")
+	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
+	if _, err := d.db.Exec(query4, field_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+	var id string
+
+	query1 := fmt.Sprintf(`SELECT country_id FROM %s WHERE id=$1`, feild_table)
+	fmt.Println("____________________")
+	fmt.Println(query1)
+	fmt.Println("____________________")
+	if err := d.db.DB.QueryRow(query1, field_id).Scan(
+		&id,
+	); err != nil {
+		fmt.Println("----------------------")
+		fmt.Println(err)
+	}
+	fmt.Println("_____+===+++")
+	fmt.Println(id)
+	fmt.Println("_____+===+++")
+
+	query3 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, feild_table)
+	if _, err := d.db.Exec(query3, field_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	query8 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, country_table)
+	res, err := d.db.Exec(query8, id)
+	if err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+
+	fmt.Println("_+_+_+")
+	fmt.Println(res.RowsAffected())
+	fmt.Println("_+_+_+")
+	k, _ := res.RowsAffected()
+	if k == 1 {
+		return field_id, nil
+	} else {
+		return "", errors.New("error bor ")
+	}
 }
 
 // GetFeildIdToList implements storage.AdminI.
