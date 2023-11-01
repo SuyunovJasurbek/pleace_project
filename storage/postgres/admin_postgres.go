@@ -13,6 +13,8 @@ type adminRepository struct {
 	db *sqlx.DB
 }
 
+
+
 var (
 	users_table   = "users"
 	country_table = "country"
@@ -20,6 +22,16 @@ var (
 	picture_table = "images"
 	data_table    = "weather"
 )
+// DeleteImage implements storage.AdminI.
+func (d *adminRepository) DeleteImage(image_id string) (string, error) {
+	query := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, picture_table)
+	if _, err := d.db.Exec(query, image_id); err != nil {
+		fmt.Println("_________________________")
+		fmt.Println(err)
+		return "", err
+	}
+	return "delete succses" , nil
+}
 
 // DeleteCountry implements storage.AdminI.
 func (d *adminRepository) DeleteCountry(country_id string) (string, error) {

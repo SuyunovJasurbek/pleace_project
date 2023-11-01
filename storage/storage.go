@@ -37,4 +37,5 @@ type AdminI interface {
 	GetFeildIdToList(country_id string) ([]models.CountryToDB, error)
 	DeleteCountry(country_id string) (string, error)
 	DeleteField(field_id string) (string, error)
+	DeleteImage(image_id string) (string, error)
 }

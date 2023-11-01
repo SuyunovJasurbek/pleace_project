@@ -263,3 +263,31 @@ func (h *Handler) DeleteField(c *gin.Context) {
 		Message: "Delete Succses",
 	})
 }
+
+// Delete Image 
+
+func (h *Handler) DeleteImage(c *gin.Context) {
+	id := c.Query("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Id not fount",
+		})
+		return
+	}
+
+	_, err := h.service.DeleteImage(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Biror joyida xatolik bor .",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, Response{
+		Succses: true,
+		Message: "Delete Succses",
+	})
+	
+
+}

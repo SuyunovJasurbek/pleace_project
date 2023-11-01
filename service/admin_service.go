@@ -91,3 +91,8 @@ func (s *Service) DeleteCountry(country_id string) (string, error) {
 func (s *Service) DeleteField(field_id string) (string, error) {
 	return s.repo.Admin().DeleteField(field_id)
 }
+
+
+func (s *Service) DeleteImage(image_id string) (string, error) {
+	return s.repo.Admin().DeleteImage(image_id)
+}
