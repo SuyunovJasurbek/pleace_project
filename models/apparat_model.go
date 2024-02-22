@@ -2,7 +2,7 @@ package models
 
 
 type AparatData struct {
-	FeildId string `json:"feild_id" binding:"required" `
+	FeildId string `json:"device_id" binding:"required" `
 	ResultHumidity string `json:"result_humidity" binding:"required" `
 	ResultTemperature string `json:"result_temperature" binding:"required" `
 	ResultLight string `json:"result_light" binding:"required" `
@@ -36,4 +36,19 @@ type GetFeildIdAll struct {
 type GetFeildIdToList struct {
 	FeildId string `json:"feild_id" binding:"required" `
 	Name string `json:"name" binding:"required" `
+}
+
+type GetHumidity struct {
+	Humidity string `json:"humidity" db:"result_humidity" `
+	Date string `json:"date" db:"created_at" `
+}
+
+type GetTemperature struct {
+	Temperature string `json:"temperature" db:"result_sun" `
+	Date string `json:"date" db:"created_at" `
+}
+
+type GetLight struct {
+	Light string `json:"light" db:"result_wind" `
+	Date string `json:"date" db:"created_at" `
 }

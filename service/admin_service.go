@@ -3,9 +3,6 @@ package service
 import (
 	"errors"
 	"stad_projekt/models"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 func (s *Service) SignIn(sgn models.SignInModel) (string ,  error) {
@@ -21,78 +18,26 @@ func (s *Service) Auth(token string) (bool) {
 	return s.repo.Admin().Auth(token)
 }
 
-func (s *Service) CreateCountry (data models.Country) (string , error) {
-	var cnt= models.CountryToDB{
-		Id:       uuid.NewString(),
-		Name:     data.Name,
-		Location: data.Location,
-		CreateAt: time.Now().Format("2006-01-02 15:04:05"),
-	}
 
-	id , err :=s.repo.Admin().Country(cnt)
-	if err != nil {
-		 return "", err
-	}
-	return id, nil
+func (s *Service) GetInactiveUsers () ([]models.AccsesUser , error) {
+	return s.repo.Admin().GetInactiveUsers()
 }
 
-func (s *Service) CreateField (data models.Feild)(string, error) {
-	var md = models.FeildToDB{
-		Id:       uuid.NewString(),
-		CountryId: data.CountryId,
-		Name:     data.Name,
-		CreateAt: time.Now().Format("2006-01-02 15:04:05"),
-	}
-
-	id , err :=s.repo.Admin().Feild(md)
-	if err!= nil {
-		return "", err
-	}
-
-	return id, nil
+func (s *Service) GetActiveUsers () ([]models.AccsesUser , error) {
+	return s.repo.Admin().GetActiveUsers()
 }
 
-func (s *Service) CreatePicture (data models.Picture)(string, error) {
-	var md = models.PictureToDB{
-		Id:       uuid.NewString(),
-		FeildId:  data.FeildId,
-		Url:      data.Url,
-		CreateAt: time.Now().Format("2006-01-02 15:04:05"),
-	}
-
-	id , err :=s.repo.Admin().Picture(md)
-	if err!= nil {
-		return "", err
-	}
-
-	return id, nil
+func (s *Service) CreatePersonCountry(data models.PersonCountry) error {
+	return s.repo.Admin().CreatePersonCountry(data)
 }
 
-func (s *Service) GetCountry () ([]models.GetCountry, error) {
-	return s.repo.Admin().GetCountry()
+func (s * Service)  GetActivePleaces (person_id string ) ([]models.Place , error) {
+	return s.repo.Admin().GetActivePleaces(person_id)
 }
 
-func (s *Service) GetField () ([]models.GetField, error) {
-	return s.repo.Admin().GetField()
+func (s *Service) UpdatePleace(pleace_id string) error {
+	return s.repo.Admin().UpdatePleace(pleace_id)
 }
-
-func (s *Service) GetPicture(dat string) ([]models.GetPicture, error) {
-	pictures, err := s.repo.Admin().GetPicture(dat)
-	if err != nil {
-		return nil, err
-	}
-	return pictures, nil
-}
-
-func (s *Service) DeleteCountry(country_id string) (string, error) {
-	return s.repo.Admin().DeleteCountry(country_id)
-}
-
-func (s *Service) DeleteField(field_id string) (string, error) {
-	return s.repo.Admin().DeleteField(field_id)
-}
-
-
-func (s *Service) DeleteImage(image_id string) (string, error) {
-	return s.repo.Admin().DeleteImage(image_id)
+func (s *Service) UpdatePerson(person_id string) error {
+	return s.repo.Admin().UpdatePerson(person_id)
 }

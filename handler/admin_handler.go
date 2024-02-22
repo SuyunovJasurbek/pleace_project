@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"stad_projekt/helper"
 	"stad_projekt/models"
 
 	"github.com/gin-gonic/gin"
@@ -73,221 +72,110 @@ func (h *Handler) SignIn(c *gin.Context) {
 	})
 }
 
-// ShowAccount godoc
-// @Summary      List accounts
-// @Description  get accounts
-// @Tags         accounts
-// @Accept       json
-// @Produce      json
-// @Success      200  {string}  string	"ok"
-// @Failure      400  {string}  string	"error"
-// @Failure      404  {string}  string	"error"
-// @Failure      500  {string}  string	"error"
-// @Router       /admin/createcountry [post]
-func (h *Handler) CreateCountry(c *gin.Context) {
-	var crt models.Country
-	err := c.ShouldBindJSON(&crt)
+func (h *Handler) GetInactiveUsers(c *gin.Context) {
+	//1.
+	res, err := h.service.GetInactiveUsers()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "Malumotlar tulig' emas",
+			Succses: false,
+			Message: "Ma'lumotlar bazadan olinmadi",
 		})
 		return
 	}
 
-	id, err := h.service.CreateCountry(crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, ResponseCountry{
-		Succses:   true,
-		CountryId: id,
-	})
+	//2.
+	c.JSON(http.StatusOK, res)
 }
 
-// Create Field ............
-func (h *Handler) CreateField(c *gin.Context) {
-	var crt models.Feild
-	err := c.ShouldBindJSON(&crt)
+func (h *Handler) GetActiveUsers(c *gin.Context) {
+	//1.
+	res, err := h.service.GetActiveUsers()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "Malumotlar tulig' emas",
+			Succses: false,
+			Message: "Ma'lumotlar bazadan olinmadi",
 		})
 		return
 	}
 
-	id, err := h.service.CreateField(crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, ResponseFeild{
-		Succses: true,
-		FeildId: id,
-	})
+	//2.
+	c.JSON(http.StatusOK, res)
 }
 
-// Create Picture ............
-func (h *Handler) CreatePicture(c *gin.Context) {
-	file, err := c.FormFile("file")
+func (h *Handler) CreatePerson(c *gin.Context) {
+	var person models.PersonCountry
+	err := c.ShouldBindJSON(&person)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "File type  not fount",
+			Succses: false,
+			Message: "Ma'lumotlar tulig' emas",
 		})
 		return
 	}
+	//2.
 
-	field_id := c.PostForm("field_id")
-	if field_id == "" {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Field_Id not fount",
-		})
-		return
-	}
-
-	name := helper.RandomString(5)
-	path := "static/" + field_id + "/" + name + ".jpg"
-	err = c.SaveUploadedFile(file, path)
+	err = h.service.CreatePersonCountry(person)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "File not save",
-		})
-		return
-	}
-
-	var crt = models.Picture{
-		FeildId: field_id,
-		Url:     path,
-	}
-
-	id, err := h.service.CreatePicture(crt)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
+			Succses: false,
+			Message: "Ma'lumotlar bazaga yozilmadi",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, Response{
 		Succses: true,
-		Message: id,
+		Message: "Ma'lumotlar bazaga yozildi",
 	})
 }
 
-// Get Country ............
-func (h *Handler) GetCountry(c *gin.Context) {
-
-	countrys, err := h.service.GetCountry()
+func (h *Handler) GetActivePleaces(c *gin.Context) {
+	//1.
+	person_id := c.Query("person_id")
+	fmt.Println(person_id,1212)
+	res, err := h.service.GetActivePleaces(person_id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
+			Succses: false,
+			Message: "Ma'lumotlar bazadan olinmadi",
 		})
-
 		return
-
 	}
 
-	c.JSON(http.StatusOK, countrys)
+	//2.
+	c.JSON(http.StatusOK, res)
 }
 
-// Get Field ............
-func (h *Handler) GetField(c *gin.Context) {
-
-	countrys, err := h.service.GetField()
+func (h *Handler) UpdatePleace (c *gin.Context) {
+	pleace_id := c.Query("id")
+	err := h.service.UpdatePleace(pleace_id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-
-		return
-
-	}
-
-	c.JSON(http.StatusOK, countrys)
-}
-
-// Delete Country ............
-func (h *Handler) DeleteCountry(c *gin.Context) {
-	id := c.Query("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Id not fount",
+			Succses: false,
+			Message: "Ma'lumotlar bazadan o'zgartirilmadi",
 		})
 		return
 	}
 
-	b, err := h.service.DeleteCountry(id)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, Response{
+	c.JSON(http.StatusOK, Response{	
 		Succses: true,
-		Message: b,
+		Message: "Ma'lumotlar bazadan o'zgartirildi",
 	})
 }
 
-// Delete Field ............
-func (h *Handler) DeleteField(c *gin.Context) {
-	id := c.Query("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Id not fount",
-		})
-		return
-	}
-
-	_, err := h.service.DeleteField(id)
-	fmt.Println("________________")
-	fmt.Println(err)
-	fmt.Println("________________")
+func (h *Handler) UpdatePerson (c *gin.Context) {
+	person_id := c.Query("id")
+	err := h.service.UpdatePerson(person_id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
+			Succses: false,
+			Message: "Ma'lumotlar bazadan o'zgartirilmadi",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, Response{
+	c.JSON(http.StatusOK, Response{	
 		Succses: true,
-		Message: "Delete Succses",
+		Message: "Ma'lumotlar bazadan o'zgartirildi",
 	})
-}
-
-// Delete Image 
-
-func (h *Handler) DeleteImage(c *gin.Context) {
-	id := c.Query("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Id not fount",
-		})
-		return
-	}
-
-	_, err := h.service.DeleteImage(id)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, Response{
-			Message: "Biror joyida xatolik bor .",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, Response{
-		Succses: true,
-		Message: "Delete Succses",
-	})
-	
-
 }

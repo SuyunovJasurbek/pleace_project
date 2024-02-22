@@ -48,27 +48,25 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 	// Admin ....
 	admin := w.Group("admin", h.Validet)
 	{
-		admin.POST("/createdcountry", h.CreateCountry)
-		admin.POST("/createdfield", h.CreateField)
-		admin.POST("/uploadedpicture", h.CreatePicture)
-		admin.GET("/getcountry", h.GetCountry)
-		admin.GET("/getfield", h.GetField)
 		admin.GET("/getdata", h.GetData)
-		admin.GET("/getpicture", h.GetPicture)
-		admin.GET("/getcountryid", h.GetFeildIdToList)
-		admin.DELETE("/deletecountry", h.DeleteCountry)
-		admin.DELETE("/deletefield", h.DeleteField)
-		admin.DELETE("/deleteimage",h.DeleteImage)
+		// new 
+		admin.GET("/getinactiveusers", h.GetInactiveUsers)
+		admin.GET("/getactiveusers", h.GetActiveUsers)
+		admin.GET("/getactivepleaces", h.GetActivePleaces)
+		admin.POST("/create", h.CreatePerson)
+		admin.PUT("/updatepleace", h.UpdatePleace)
+		admin.PUT("/updateperson", h.UpdatePerson)
 	}
 
 	// Person ....
 	person := w.Group("person")
 	{
-		person.GET("/getcountry", h.GetCountry)
-		person.GET("/getfield", h.GetField)
-		person.GET("/getdata", h.GetData)
-		person.GET("/getpicture", h.GetPicture)
-		person.GET("/getcountryid", h.GetFeildIdToList)
+		person.POST("/signup", h.SignUpPeraon)
+		person.POST("signin", h.SignInPerson)
+		person.GET("gethumidity", h.GetHumidity)
+		person.GET("gettemperature", h.GetTemperature)
+		person.GET("getlight", h.GetLight)
+		person.GET("gethome", h.GetHome)
 	}
 
 	// ArdunioBoard ......

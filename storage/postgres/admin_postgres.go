@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
 	"stad_projekt/models"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -18,197 +18,9 @@ type adminRepository struct {
 var (
 	users_table   = "users"
 	country_table = "country"
-	feild_table   = "feild"
-	picture_table = "images"
 	data_table    = "weather"
+	persons_table = "persons"
 )
-// DeleteImage implements storage.AdminI.
-func (d *adminRepository) DeleteImage(image_id string) (string, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, picture_table)
-	if _, err := d.db.Exec(query, image_id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-	return "delete succses" , nil
-}
-
-// DeleteCountry implements storage.AdminI.
-func (d *adminRepository) DeleteCountry(country_id string) (string, error) {
-	var id string
-
-	query1 := fmt.Sprintf(`SELECT id  FROM %s WHERE country_id=$1`, feild_table)
-	fmt.Println("____________________")
-	fmt.Println(query1)
-	fmt.Println(country_id)
-	fmt.Println("____________________")
-	if err := d.db.DB.QueryRow(query1, country_id).Scan(
-		&id,
-	); err != nil {
-		fmt.Println("----------------------")
-		fmt.Println(err)
-	}
-
-	query2 := fmt.Sprintf(`DELETE FROM %s WHERE device_id=$1`, data_table)
-	if _, err := d.db.Exec(query2, id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
-	if _, err := d.db.Exec(query4, id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	query3 := fmt.Sprintf(`DELETE FROM %s WHERE country_id=$1`, feild_table)
-	if _, err := d.db.Exec(query3, country_id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	query5 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, country_table)
-	res, err := d.db.Exec(query5, country_id)
-	if err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	fmt.Println("_+_+_+")
-	fmt.Println(res.RowsAffected())
-	fmt.Println("_+_+_+")
-	k, _ := res.RowsAffected()
-	if k == 1 {
-		return country_id, nil
-	} else {
-		return "", errors.New("error bor ")
-	}
-}
-
-// DeleteField implements storage.AdminI.
-func (d *adminRepository) DeleteField(field_id string) (string, error) {
-
-	query2 := fmt.Sprintf(`DELETE FROM %s WHERE device_id=$1`, data_table)
-	if _, err := d.db.Exec(query2, field_id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	query4 := fmt.Sprintf(`DELETE FROM %s WHERE feild_id=$1`, picture_table)
-	if _, err := d.db.Exec(query4, field_id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-	var id string
-
-	query1 := fmt.Sprintf(`SELECT country_id FROM %s WHERE id=$1`, feild_table)
-	fmt.Println("____________________")
-	fmt.Println(query1)
-	fmt.Println("____________________")
-	if err := d.db.DB.QueryRow(query1, field_id).Scan(
-		&id,
-	); err != nil {
-		fmt.Println("----------------------")
-		fmt.Println(err)
-	}
-	fmt.Println("_____+===+++")
-	fmt.Println(id)
-	fmt.Println("_____+===+++")
-
-	query3 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, feild_table)
-	if _, err := d.db.Exec(query3, field_id); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	query8 := fmt.Sprintf(`DELETE FROM %s WHERE id=$1`, country_table)
-	res, err := d.db.Exec(query8, id)
-	if err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-
-	fmt.Println("_+_+_+")
-	fmt.Println(res.RowsAffected())
-	fmt.Println("_+_+_+")
-	k, _ := res.RowsAffected()
-	if k == 1 {
-		return field_id, nil
-	} else {
-		return "", errors.New("error bor ")
-	}
-}
-
-// GetFeildIdToList implements storage.AdminI.
-func (d *adminRepository) GetFeildIdToList(country_id string) ([]models.CountryToDB, error) {
-	query := fmt.Sprintf(`SELECT id, name, created_at FROM %s WHERE country_id=$1`, feild_table)
-	rows, err := d.db.Query(query, country_id)
-	if err != nil {
-		fmt.Println("__________tashqarida____________")
-		fmt.Println(err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	var cnt []models.CountryToDB
-
-	for rows.Next() {
-		var c models.CountryToDB
-		if err := rows.Scan(
-			&c.Id,
-			&c.Name,
-			&c.CreateAt,
-		); err != nil {
-			fmt.Println("____________ichida_________")
-			fmt.Println(err)
-			return nil, err
-		}
-
-		cnt = append(cnt, c)
-	}
-
-	return cnt, nil
-}
-
-// GetPicture implements storage.AdminI.
-func (d *adminRepository) GetPicture(dat string) ([]models.GetPicture, error) {
-	var cnt []models.GetPicture
-
-	query := fmt.Sprintf(`SELECT id, feild_id, path, created_at FROM %s WHERE feild_id=$1`, picture_table)
-	rows, err := d.db.Query(query, dat)
-	if err != nil {
-		fmt.Println("__________tashqarida____________")
-		fmt.Println(err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.GetPicture
-		if err := rows.Scan(
-			&c.Id,
-			&c.FeildId,
-			&c.Url,
-			&c.CreateAt,
-		); err != nil {
-			fmt.Println("____________ichida_________")
-			fmt.Println(err)
-			return nil, err
-		}
-
-		cnt = append(cnt, c)
-	}
-
-	return cnt, nil
-}
 
 // Auth implements storage.AdminI.
 func (d *adminRepository) Auth(token string) bool {
@@ -226,12 +38,6 @@ func (d *adminRepository) Auth(token string) bool {
 	}
 	return false
 }
-
-// UserList implements storage.AdminI.
-func (*adminRepository) UserList(models.UserList) ([]models.UserList, error) {
-	panic("unimplemented")
-}
-
 // GetData implements storage.AdminI.
 func (d *adminRepository) GetData(dat string) ([]models.AparatDataToDB, error) {
 	var cnt []models.AparatDataToDB
@@ -265,12 +71,11 @@ func (d *adminRepository) GetData(dat string) ([]models.AparatDataToDB, error) {
 
 	return cnt, nil
 }
-
 // CreateData implements storage.AdminI.
 func (d *adminRepository) CreateData(enty models.AparatDataToDB) (string, error) {
-	query := fmt.Sprintf(`INSERT INTO %s (id, device_id, result_humidity, result_sun, result_wind, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, data_table)
+	query := fmt.Sprintf(`INSERT INTO %s (id, device_id, result_humidity, result_sun, result_wind, created_at ) VALUES ($1, $2, $3, $4, $5, $6)`, data_table)
 
-	if _, err := d.db.Exec(query, enty.Id, enty.FeildId, enty.ResultHumidity, enty.ResultTemperature, enty.ResultLight, enty.CreateAt, enty.CreateAt, "-"); err != nil {
+	if _, err := d.db.Exec(query, enty.Id, enty.FeildId, enty.ResultHumidity, enty.ResultTemperature, enty.ResultLight, enty.CreateAt); err != nil {
 		fmt.Println("_________________________")
 		fmt.Println(err)
 		return "", err
@@ -278,109 +83,6 @@ func (d *adminRepository) CreateData(enty models.AparatDataToDB) (string, error)
 
 	return enty.Id, nil
 }
-
-// GetField implements storage.AdminI.
-func (d *adminRepository) GetField() ([]models.GetField, error) {
-	var cnt []models.GetField
-
-	query := fmt.Sprintf(`SELECT id, name, country_id , created_at FROM %s`, feild_table)
-	rows, err := d.db.Query(query)
-	if err != nil {
-		fmt.Println("__________tashqarida____________")
-		fmt.Println(err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.GetField
-		if err := rows.Scan(
-			&c.Id,
-			&c.Name,
-			&c.CountryId,
-			&c.CreateAt,
-		); err != nil {
-			fmt.Println("____________ichida_________")
-			fmt.Println(err)
-			return nil, err
-		}
-
-		cnt = append(cnt, c)
-	}
-
-	return cnt, nil
-}
-
-// GetCountry implements storage.AdminI.
-func (d *adminRepository) GetCountry() ([]models.GetCountry, error) {
-	var cnt []models.GetCountry
-
-	query := fmt.Sprintf(`SELECT id, name, location , created_at FROM %s`, country_table)
-	rows, err := d.db.Query(query)
-	if err != nil {
-		fmt.Println("__________tashqarida____________")
-		fmt.Println(err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.GetCountry
-		if err := rows.Scan(
-			&c.Id,
-			&c.Name,
-			&c.Location,
-			&c.CreateAt,
-		); err != nil {
-			fmt.Println("____________ichida_________")
-			fmt.Println(err)
-			return nil, err
-		}
-
-		cnt = append(cnt, c)
-	}
-
-	return cnt, nil
-
-}
-
-// Picture implements storage.AdminI.
-func (d *adminRepository) Picture(enty models.PictureToDB) (string, error) {
-	query := fmt.Sprintf(`INSERT INTO %s (id, feild_id, path, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, picture_table)
-
-	if _, err := d.db.Exec(query, enty.Id, enty.FeildId, enty.Url, enty.CreateAt, enty.CreateAt, "-"); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-	return enty.Id, nil
-}
-
-// Country implements storage.AdminI.
-func (d *adminRepository) Country(cnt models.CountryToDB) (string, error) {
-	query := fmt.Sprintf(`INSERT INTO %s (id, name, location, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, country_table)
-
-	if _, err := d.db.Exec(query, cnt.Id, cnt.Name, cnt.Location, cnt.CreateAt, cnt.CreateAt, "-"); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-	return cnt.Id, nil
-
-}
-
-// Feild implements storage.AdminI.
-func (d *adminRepository) Feild(cnt models.FeildToDB) (string, error) {
-	query := fmt.Sprintf(`INSERT INTO %s (id, country_id, name, created_at, updated_at, deleted_at ) VALUES ($1, $2, $3, $4, $5 , $6)`, feild_table)
-
-	if _, err := d.db.Exec(query, cnt.Id, cnt.CountryId, cnt.Name, cnt.CreateAt, cnt.CreateAt, "-"); err != nil {
-		fmt.Println("_________________________")
-		fmt.Println(err)
-		return "", err
-	}
-	return cnt.Id, nil
-}
-
 // SignIn implements storage.AdminI.
 func (d *adminRepository) SignIn(ent models.SignInModel) (string, error) {
 	var token string
@@ -405,6 +107,129 @@ func (d *adminRepository) SignIn(ent models.SignInModel) (string, error) {
 	}
 
 	return token_new, nil
+}
+// InactiveUsers implements storage.AdminI.
+func (d *adminRepository) GetInactiveUsers() ([]models.AccsesUser, error) {
+	query := `SELECT  fullname, id FROM persons where status =  '0' ;`
+	var cnt []models.AccsesUser
+	rows, err := d.db.Query(query)
+	if err != nil {
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.AccsesUser
+		if err := rows.Scan(
+			&c.Fullname,
+			&c.PersonId,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
+	}
+
+	return cnt, nil
+}
+// ActiveUsers implements storage.AdminI.
+func (d *adminRepository) GetActiveUsers() ([]models.AccsesUser, error) {
+	query := `SELECT  fullname, id FROM persons where status =  '1' ;`
+	var cnt []models.AccsesUser
+	rows, err := d.db.Query(query)
+	if err != nil {
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.AccsesUser
+		if err := rows.Scan(
+			&c.Fullname,
+			&c.PersonId,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
+	}
+
+	return cnt, nil
+}
+// CreatePersonCountry implements storage.AdminI.
+func (d *adminRepository) CreatePersonCountry(data models.PersonCountry) error {
+	fmt.Println(data)
+	query := fmt.Sprintf(`INSERT INTO %s (id, person_id ,  region_name , district_name ,  village_name , device_id , status , pleace_name , created_at ) VALUES ($1, $2, $3, $4, $5, $6 , $7,$8,$9)`, country_table)
+	_, err := d.db.Exec(query, uuid.NewString(),data.PersonId, data.Region, data.District, data.Village, data.DeviceId, "1", data.PleaceName, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	update_query :=`UPDATE persons SET status = '1' WHERE id = $1`
+	_, err = d.db.Exec(update_query, data.PersonId)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
+// GetActivePleaces implements storage.AdminI.
+func (d *adminRepository) GetActivePleaces(person_id string) ([]models.Place, error) {
+	fmt.Println(person_id)
+	query := `SELECT  id, pleace_name FROM country where status =  '1' and person_id =$1 ;`
+	var cnt []models.Place
+	rows, err := d.db.Query(query, person_id)
+	if err != nil {
+		fmt.Println("__________tashqarida____________")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c models.Place
+		if err := rows.Scan(
+			&c.PlaceId,
+			&c.PlaceName,
+		); err != nil {
+			fmt.Println("____________ichida_________")
+			fmt.Println(err)
+			return nil, err
+		}
+
+		cnt = append(cnt, c)
+	}
+
+	return cnt, nil
+}
+// UpdatePleace implements storage.AdminI.
+func (d *adminRepository) UpdatePleace(pleace_id string) error {
+	query := `UPDATE country SET status = '0' WHERE id = $1`
+	_, err := d.db.Exec(query, pleace_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+// UpdatePerson implements storage.AdminI.
+func (d *adminRepository) UpdatePerson(person_id string) error {
+	query := `UPDATE persons SET status = '0' WHERE id = $1`
+	_, err := d.db.Exec(query, person_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 func NewAdminRepository(db *sqlx.DB) *adminRepository {

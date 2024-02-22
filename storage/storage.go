@@ -15,6 +15,12 @@ type CasheStorageI interface {
 	Token() TokenI
 }
 type PersonI interface {
+	SignUpPerson(models.SignInPersonModel) error
+	SignInPerson(parol string) (string, error)
+	GetHumidity(device_id string) ([]models.GetHumidity, error)
+	GetTemperature(device_id string) ([]models.GetTemperature, error)
+	GetLight(device_id string) ([]models.GetLight, error)
+	GetHome(id string) (models.PersonSignInModel, error)
 }
 
 type TokenI interface {
@@ -25,17 +31,12 @@ type TokenI interface {
 type AdminI interface {
 	SignIn(models.SignInModel) (string, error)
 	Auth(token string) bool
-	UserList(models.UserList) ([]models.UserList, error)
-	Country(models.CountryToDB) (string, error)
-	Feild(models.FeildToDB) (string, error)
-	Picture(models.PictureToDB) (string, error)
-	GetCountry() ([]models.GetCountry, error)
-	GetField() ([]models.GetField, error)
 	CreateData(models.AparatDataToDB) (string, error)
 	GetData(dat string) ([]models.AparatDataToDB, error)
-	GetPicture(dat string) ([]models.GetPicture, error)
-	GetFeildIdToList(country_id string) ([]models.CountryToDB, error)
-	DeleteCountry(country_id string) (string, error)
-	DeleteField(field_id string) (string, error)
-	DeleteImage(image_id string) (string, error)
+	GetInactiveUsers() ([]models.AccsesUser, error)
+	GetActiveUsers() ([]models.AccsesUser, error)
+	GetActivePleaces(person_id string) ([]models.Place, error)
+	CreatePersonCountry(models.PersonCountry) error
+	UpdatePleace(pleace_id string) error
+	UpdatePerson(person_id string) error
 }

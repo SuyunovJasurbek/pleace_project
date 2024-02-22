@@ -37,14 +37,3 @@ func (s *Service) GetData(data string ) ([]models.AparatDataToDB, error) {
 	return res, nil
 
 }
-
-func (s *Service) GetFeildIdToList(country_id string ) ([]models.CountryToDB, error) {
-
-	res, err := s.repo.Admin().GetFeildIdToList(country_id)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-
-}
