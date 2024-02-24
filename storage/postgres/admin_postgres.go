@@ -110,7 +110,7 @@ func (d *adminRepository) SignIn(ent models.SignInModel) (string, error) {
 }
 // InactiveUsers implements storage.AdminI.
 func (d *adminRepository) GetInactiveUsers() ([]models.AccsesUser, error) {
-	query := `SELECT  fullname, id FROM persons where status =  '0' ;`
+	query := `SELECT  fullname, id, phone FROM persons where status =  '0' ;`
 	var cnt []models.AccsesUser
 	rows, err := d.db.Query(query)
 	if err != nil {
@@ -125,6 +125,7 @@ func (d *adminRepository) GetInactiveUsers() ([]models.AccsesUser, error) {
 		if err := rows.Scan(
 			&c.Fullname,
 			&c.PersonId,
+			&c.Phone,
 		); err != nil {
 			fmt.Println("____________ichida_________")
 			fmt.Println(err)
@@ -138,7 +139,7 @@ func (d *adminRepository) GetInactiveUsers() ([]models.AccsesUser, error) {
 }
 // ActiveUsers implements storage.AdminI.
 func (d *adminRepository) GetActiveUsers() ([]models.AccsesUser, error) {
-	query := `SELECT  fullname, id FROM persons where status =  '1' ;`
+	query := `SELECT  fullname, id, phone FROM persons where status =  '1' ;`
 	var cnt []models.AccsesUser
 	rows, err := d.db.Query(query)
 	if err != nil {
@@ -153,6 +154,7 @@ func (d *adminRepository) GetActiveUsers() ([]models.AccsesUser, error) {
 		if err := rows.Scan(
 			&c.Fullname,
 			&c.PersonId,
+			&c.Phone,
 		); err != nil {
 			fmt.Println("____________ichida_________")
 			fmt.Println(err)

@@ -14,6 +14,7 @@ type SignInHandlerResponse struct {
 type AccsesUser struct {	
 	Fullname string `json:"fullname"  db:"fullname" `
 	PersonId string `json:"id"  db:"id" `
+	Phone   string `json:"phone"  db:"phone" `
 }
 
 type Place struct {

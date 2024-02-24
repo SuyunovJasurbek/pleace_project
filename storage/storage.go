@@ -14,7 +14,7 @@ type StorageI interface {
 type CasheStorageI interface {
 	Token() TokenI
 }
-type PersonI interface {
+type PersonI interface {	
 	SignUpPerson(models.SignInPersonModel) error
 	SignInPerson(parol string) (string, error)
 	GetHumidity(device_id string) ([]models.GetHumidity, error)
