@@ -98,3 +98,14 @@ func (p *personRepository) GetHome(id string ) (models.PersonSignInModel, error)
 	}
 	return person, nil
 }
+
+// getDayDate implements storage.PersonI.
+func (p *personRepository) GetDayDate(device_id string) ([]models.DayDate, error) {
+	var dayDate []models.DayDate
+	query := fmt.Sprintf(`SELECT result_humidity, result_sun, result_wind , created_at  FROM %s WHERE device_id = $1`, "weather")
+	err := p.db.Select(&dayDate, query, device_id)
+	if err != nil {
+		return []models.DayDate{}, err
+	}
+	return dayDate, nil
+}

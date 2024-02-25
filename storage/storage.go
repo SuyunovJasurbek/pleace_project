@@ -20,6 +20,7 @@ type PersonI interface {
 	GetHumidity(device_id string) ([]models.GetHumidity, error)
 	GetTemperature(device_id string) ([]models.GetTemperature, error)
 	GetLight(device_id string) ([]models.GetLight, error)
+	GetDayDate(device_id string) ([]models.DayDate, error)
 	GetHome(id string) (models.PersonSignInModel, error)
 }
 

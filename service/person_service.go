@@ -26,7 +26,8 @@ func (s *Service) GetHumidity(device_id string) ([]models.GetHumidity, error) {
 }
 
 func (s *Service) GetTemperature(device_id string) ([]models.GetTemperature, error) {
-	fmt.Println("service", device_id)
+	fmt.Println("KELSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII", device_id)
+
 	data, err :=s.repo.Person().GetTemperature(device_id)
 	if err != nil {
 		fmt.Println(err)
@@ -53,4 +54,14 @@ func (s *Service) GetHome(id string) (models.PersonSignInModel, error) {
 func (s *Service) SignInPerson(parol string) (string, error) {
 	fmt.Println("service", parol)
 	return s.repo.Person().SignInPerson(parol)
+}
+
+func (s *Service) GetDayDate(device_id string) ([]models.DayDate, error) {
+	fmt.Println("service", device_id)
+	data, err := s.repo.Person().GetDayDate(device_id)
+	if err != nil {
+		fmt.Println(err)
+		return []models.DayDate{}, err
+	}
+	return data, nil
 }

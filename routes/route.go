@@ -64,9 +64,7 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 		person.POST("/signup", h.SignUpPeraon)
 		person.POST("signin", h.SignInPerson)
 		person.GET("gethumidity", h.GetHumidity)
-		person.GET("gettemperature", h.GetTemperature)
-		person.GET("getlight", h.GetLight)
-		person.GET("gethome", h.GetHome)
+		person.GET("getpleacedata", h.GetAfislanyData)
 		person.GET("gethomestaticdata", h.GetHomeStaticData)
 	}
 

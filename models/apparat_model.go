@@ -58,3 +58,18 @@ type HomeDataStatic struct {
 	Tempreature []GetTemperature `json:"temperature" db:"temperature" `
 	Light []GetLight `json:"light" db:"light" `
 }
+
+type DayDate struct {
+	Day string `json:"day" binding:"required" `
+	Temperature string `json:"temperature" db:"result_sun" `
+	Light string `json:"light" db:"result_wind" `
+	Humidity string `json:"humidity" db:"result_humidity" `
+	Date string `json:"date" db:"created_at" `
+}
+
+type GetDeviceIDData struct {
+	Humidity []GetHumidity `json:"humidity" db:"humidity" `
+	Tempreature []GetTemperature `json:"temperature" db:"temperature" `
+	Light []GetLight `json:"light" db:"light" `
+	DayDate []DayDate `json:"day_date" db:"day_date" `
+}
