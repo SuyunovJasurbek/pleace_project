@@ -67,6 +67,7 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 		person.GET("gettemperature", h.GetTemperature)
 		person.GET("getlight", h.GetLight)
 		person.GET("gethome", h.GetHome)
+		person.GET("gethomestaticdata", h.GetHomeStaticData)
 	}
 
 	// ArdunioBoard ......

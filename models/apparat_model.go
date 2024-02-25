@@ -52,3 +52,9 @@ type GetLight struct {
 	Light string `json:"light" db:"result_wind" `
 	Date string `json:"date" db:"created_at" `
 }
+
+type HomeDataStatic struct {
+	Humidity []GetHumidity `json:"humidity" db:"humidity" `
+	Tempreature []GetTemperature `json:"temperature" db:"temperature" `
+	Light []GetLight `json:"light" db:"light" `
+}

@@ -132,7 +132,7 @@ func (h *Handler) CreatePerson(c *gin.Context) {
 func (h *Handler) GetActivePleaces(c *gin.Context) {
 	//1.
 	person_id := c.Query("person_id")
-	fmt.Println(person_id,1212)
+	fmt.Println(person_id, 1212)
 	res, err := h.service.GetActivePleaces(person_id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
@@ -146,7 +146,7 @@ func (h *Handler) GetActivePleaces(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (h *Handler) UpdatePleace (c *gin.Context) {
+func (h *Handler) UpdatePleace(c *gin.Context) {
 	pleace_id := c.Query("id")
 	err := h.service.UpdatePleace(pleace_id)
 	if err != nil {
@@ -157,13 +157,13 @@ func (h *Handler) UpdatePleace (c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Response{	
+	c.JSON(http.StatusOK, Response{
 		Succses: true,
 		Message: "Ma'lumotlar bazadan o'zgartirildi",
 	})
 }
 
-func (h *Handler) UpdatePerson (c *gin.Context) {
+func (h *Handler) UpdatePerson(c *gin.Context) {
 	person_id := c.Query("id")
 	err := h.service.UpdatePerson(person_id)
 	if err != nil {
@@ -174,8 +174,143 @@ func (h *Handler) UpdatePerson (c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Response{	
+	c.JSON(http.StatusOK, Response{
 		Succses: true,
 		Message: "Ma'lumotlar bazadan o'zgartirildi",
 	})
+}
+
+func (h *Handler) GetHomeStaticData(c *gin.Context) {
+	//1.
+	var data = models.HomeDataStatic{
+		Humidity: []models.GetHumidity{
+			{
+				Humidity: "20",
+				Date:     "2021-09-01 12:00:00",
+			},
+			{
+				Humidity: "30",
+				Date:     "2021-09-01 13:00:00",
+			},
+			{
+				Humidity: "12",
+				Date:     "2021-09-01 14:00:00",
+			},
+			{
+				Humidity: "45",
+				Date:     "2021-09-01 15:00:00",
+			},
+			{
+				Humidity: "18",
+				Date:     "2021-09-01 16:00:00",
+			},
+			{
+				Humidity: "23",
+				Date:     "2021-09-01 17:00:00",
+			},
+			{
+				Humidity: "31",
+				Date:     "2021-09-01 18:00:00",
+			},
+			{
+				Humidity: "56",
+				Date:     "2021-09-01 19:00:00",
+			},
+			{
+				Humidity: "23",
+				Date:     "2021-09-01 20:00:00",
+			},
+			{
+				Humidity: "12",
+				Date:     "2021-09-01 21:00:00",
+			},
+		},
+		Tempreature: []models.GetTemperature{
+			{
+				Temperature: "20",
+				Date:        "2021-09-01 12:00:00",
+			},
+			{
+				Temperature: "30",
+				Date:        "2021-09-01 13:00:00",
+			},
+			{
+				Temperature: "18",
+				Date:        "2021-09-01 14:00:00",
+			},
+			{
+				Temperature: "20",
+				Date:        "2021-09-01 15:00:00",
+			},
+			{
+				Temperature: "27",
+				Date:        "2021-09-01 16:00:00",
+			},
+			{
+				Temperature: "15",
+				Date:        "2021-09-01 17:00:00",
+			},
+			{
+				Temperature: "29",
+				Date:        "2021-09-01 18:00:00",
+			},
+			{
+				Temperature: "31",
+				Date:        "2021-09-01 19:00:00",
+			},
+			{
+				Temperature: "33",
+				Date:        "2021-09-01 20:00:00",
+			},
+			{
+				Temperature: "25",
+				Date:        "2021-09-01 21:00:00",
+			},
+		},
+		Light: []models.GetLight{
+			{
+				Light: "20",
+				Date:  "2021-09-01 12:00:00",
+			},
+			{
+				Light: "29",
+				Date:  "2021-09-01 13:00:00",
+			},
+			{
+				Light: "32",
+				Date:  "2021-09-01 14:00:00",
+			},
+			{
+				Light: "39",
+				Date:  "2021-09-01 15:00:00",
+			},
+			{
+				Light: "29",
+				Date:  "2021-09-01 16:00:00",
+			},
+			{
+				Light: "25",
+				Date:  "2021-09-01 17:00:00",
+			},
+			{
+				Light: "35",
+				Date:  "2021-09-01 18:00:00",
+			},
+			{
+				Light: "29",
+				Date:  "2021-09-01 19:00:00",
+			},
+			{
+				Light: "19",
+				Date:  "2021-09-01 20:00:00",
+			},
+			{
+				Light: "12",
+				Date:  "2021-09-01 21:00:00",
+			},
+			
+		},
+	}
+	//2.
+	c.JSON(http.StatusOK, data)
 }
