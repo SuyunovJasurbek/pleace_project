@@ -110,7 +110,7 @@ func (d *adminRepository) SignIn(ent models.SignInModel) (string, error) {
 }
 // InactiveUsers implements storage.AdminI.
 func (d *adminRepository) GetInactiveUsers() ([]models.AccsesUser, error) {
-	query := `SELECT  fullname, id, phone FROM persons where status =  '0' ;`
+	query := `SELECT  fullname, id, phone FROM persons where status =  '0';`
 	var cnt []models.AccsesUser
 	rows, err := d.db.Query(query)
 	if err != nil {

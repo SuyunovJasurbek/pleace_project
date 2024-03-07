@@ -49,7 +49,7 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 	admin := w.Group("admin", h.Validet)
 	{
 		admin.GET("/getdata", h.GetData)
-		// new 
+		// new
 		admin.GET("/getinactiveusers", h.GetInactiveUsers)
 		admin.GET("/getactiveusers", h.GetActiveUsers)
 		admin.GET("/getactivepleaces", h.GetActivePleaces)
@@ -62,10 +62,12 @@ func RouteSetup(h handler.Handler, cfg config.Config) {
 	person := w.Group("person")
 	{
 		person.POST("/signup", h.SignUpPeraon)
+		person.GET("gethome", h.GetHome)
 		person.POST("signin", h.SignInPerson)
 		person.GET("gethumidity", h.GetHumidity)
 		person.GET("getpleacedata", h.GetAfislanyData)
 		person.GET("gethomestaticdata", h.GetHomeStaticData)
+		person.POST("senttocountry", h.SentToCountry)
 	}
 
 	// ArdunioBoard ......

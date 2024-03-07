@@ -22,6 +22,7 @@ type PersonI interface {
 	GetLight(device_id string) ([]models.GetLight, error)
 	GetDayDate(device_id string) ([]models.DayDate, error)
 	GetHome(id string) (models.PersonSignInModel, error)
+	SentToCountry(person_id string) error
 }
 
 type TokenI interface {

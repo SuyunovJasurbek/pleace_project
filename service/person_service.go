@@ -65,3 +65,9 @@ func (s *Service) GetDayDate(device_id string) ([]models.DayDate, error) {
 	}
 	return data, nil
 }
+
+
+
+func (s *Service) SentToCountry() error {
+	return s.repo.Person().SentToCountry()
+}
